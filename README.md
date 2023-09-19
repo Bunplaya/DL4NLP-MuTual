@@ -10,3 +10,11 @@ The dataset from the MuTual paper can be downloaded at [MuTual: A Dataset for Mu
 ## Models
 
 The focus will be on the GPT-2 and the BERT models. 
+
+### BERT
+
+The BERT model can be found at the [GitHub](https://github.com/google-research/bert) page. 
+
+### GPT 2
+
+The GPT 2 model can be found at the [GitHub](https://github.com/openai/gpt-2) page.
