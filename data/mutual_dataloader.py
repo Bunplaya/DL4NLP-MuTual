@@ -21,17 +21,19 @@ class MuTualDataset:
     def __getitem__(self, idx):
         return self.data[idx]
 
-# Example usage:
-# -----------------------------------------------------------------------------
-data_folder = "/path/to/mutual_dataset/train"
-dataset = MuTualDataset(data_folder)
 
-for idx in range(len(dataset)):
-    dialogue = dataset[idx]
-    answers = dialogue["answers"]
-    options = dialogue["options"]
-    article = dialogue["article"]
-    dialog_id = dialogue["id"]
+if __name__ == "__main__":
+    # Example usage:
+    # -------------------------------------------------------------------------
+    data_folder = "/path/to/mutual_dataset/train"
+    dataset = MuTualDataset(data_folder)
 
-# -----------------------------------------------------------------------------
+    for idx in range(len(dataset)):
+        dialogue = dataset[idx]
+        answers = dialogue["answers"]
+        options = dialogue["options"]
+        article = dialogue["article"]
+        dialog_id = dialogue["id"]
+
+    # -------------------------------------------------------------------------
 
