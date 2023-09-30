@@ -1,0 +1,4 @@
+
+  0%|                                                                                                                                                                                             | 0/3544 [00:01<?, ?it/s]
+Starting training loop for 1 epochs:
+Training completed, saving model at:Fientuned/bert/freeze

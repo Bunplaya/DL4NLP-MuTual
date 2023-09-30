@@ -1,0 +1,38 @@
+  0%|                                                                                                                                                                                   | 1/3544 [00:01<1:13:55,  1.25s/it]
+Traceback (most recent call last):
+  File "/home/roman/Documents/AI/DL4NLP/DL4NLP-MuTual/bert_code/main.py", line 216, in <module>
+    train_model(model, train_dataloader, val_dataloader,
+  File "/home/roman/Documents/AI/DL4NLP/DL4NLP-MuTual/bert_code/main.py", line 81, in train_model
+    preds = model(input_tokens, attention_mask, token_type_ids)[0]
+  File "/home/roman/miniconda3/envs/dl2021/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1102, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/roman/miniconda3/envs/dl2021/lib/python3.9/site-packages/transformers/models/bert/modeling_bert.py", line 1672, in forward
+    outputs = self.bert(
+  File "/home/roman/miniconda3/envs/dl2021/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1102, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/roman/miniconda3/envs/dl2021/lib/python3.9/site-packages/transformers/models/bert/modeling_bert.py", line 1020, in forward
+    encoder_outputs = self.encoder(
+  File "/home/roman/miniconda3/envs/dl2021/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1102, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/roman/miniconda3/envs/dl2021/lib/python3.9/site-packages/transformers/models/bert/modeling_bert.py", line 610, in forward
+    layer_outputs = layer_module(
+  File "/home/roman/miniconda3/envs/dl2021/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1102, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/roman/miniconda3/envs/dl2021/lib/python3.9/site-packages/transformers/models/bert/modeling_bert.py", line 495, in forward
+    self_attention_outputs = self.attention(
+  File "/home/roman/miniconda3/envs/dl2021/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1102, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/roman/miniconda3/envs/dl2021/lib/python3.9/site-packages/transformers/models/bert/modeling_bert.py", line 425, in forward
+    self_outputs = self.self(
+  File "/home/roman/miniconda3/envs/dl2021/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1102, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/roman/miniconda3/envs/dl2021/lib/python3.9/site-packages/transformers/models/bert/modeling_bert.py", line 357, in forward
+    attention_probs = self.dropout(attention_probs)
+  File "/home/roman/miniconda3/envs/dl2021/lib/python3.9/site-packages/torch/nn/modules/module.py", line 1102, in _call_impl
+    return forward_call(*input, **kwargs)
+  File "/home/roman/miniconda3/envs/dl2021/lib/python3.9/site-packages/torch/nn/modules/dropout.py", line 58, in forward
+    return F.dropout(input, self.p, self.training, self.inplace)
+  File "/home/roman/miniconda3/envs/dl2021/lib/python3.9/site-packages/torch/nn/functional.py", line 1169, in dropout
+    return _VF.dropout_(input, p, training) if inplace else _VF.dropout(input, p, training)
+RuntimeError: CUDA out of memory. Tried to allocate 96.00 MiB (GPU 0; 7.80 GiB total capacity; 6.45 GiB already allocated; 10.69 MiB free; 6.54 GiB reserved in total by PyTorch) If reserved memory is >> allocated memory try setting max_split_size_mb to avoid fragmentation.  See documentation for Memory Management and PYTORCH_CUDA_ALLOC_CONF
+Starting training loop for 1 epochs:
