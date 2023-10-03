@@ -219,5 +219,5 @@ if __name__ == "__main__":
     val_dataloader = DataLoader(val_dataset, args.batch_size, shuffle=True)
 
     train_model(model, train_dataloader, val_dataloader,
-                1, 1e-3, device, args.freeze, args.wandb,
+                args.epochs, args.learning_rate, device, args.freeze, args.wandb,
                 save_dir=args.save_dir, results_dir=args.stats_dir)
