@@ -32,18 +32,19 @@ def get_model(download_path, model_version):
     return
 
 def train_model(model, train_dataloader, val_dataloader,
-                epochs, learning_rate, device, freeze=False,
+                epochs, learning_rate, device, freeze=False, use_wandb=False,
                 save_dir="Finetuned/bert", results_dir="Results/bert"):
 
-    wandb.init(
-        project="DL4HLP",
-        config={
-            "learning_rate":learning_rate,
-            "model":save_dir.split("/")[1],
-            "epochs":epochs,
-            "freeze":freeze
-        }
-    )
+    if use_wandb:
+        wandb.init(
+            project="DL4HLP",
+            config={
+                "learning_rate":learning_rate,
+                "model":save_dir.split("/")[1],
+                "epochs":epochs,
+                "freeze":freeze
+            }
+        )
 
     loss_module = torch.nn.CrossEntropyLoss()
 
@@ -91,6 +92,7 @@ def train_model(model, train_dataloader, val_dataloader,
 
             optimizer.step()
 
+
         # Compute training set stats of epoch
         epoch_loss = np.mean(epoch_loss)
         epoch_acc = np.mean(epoch_acc)
@@ -104,15 +106,16 @@ def train_model(model, train_dataloader, val_dataloader,
         val_acc.append(val_acc_epoch)
 
         # Check validation accuracy of model, we want to save model with highest validation acc.
-        if val_acc > highest_acc:
+        if np.mean(val_acc) > highest_acc:
             best_model = model
             highest_acc = val_acc
 
-        # Log results to wandb
-        wandb.log({"val_acc":val_acc,
-                  "val_loss":val_loss,
-                  "train_acc":training_acc,
-                  "train_loss":training_loss})
+        if use_wandb:
+            # Log results to wandb
+            wandb.log({"val_acc":np.mean(val_acc),
+                      "val_loss":np.mean(val_loss),
+                      "train_acc":epoch_acc,
+                      "train_loss":epoch_loss})
 
     print(f"Training completed, saving model at:{save_dir}")
     best_model.save_pretrained(save_dir)
@@ -170,6 +173,8 @@ if __name__ == "__main__":
                            type=str, default="Finetuned/bert")
     argParser.add_argument("--stats_dir", help="Where to save the training stats",
                            type=str, default="Results/bert")
+    argParser.add_argument("--wandb", help="Whether to use weights and biases",
+                           action="store_true")
 
     # Data Arguments
     argParser.add_argument("--train_dir", help="Training data directory",
@@ -214,5 +219,5 @@ if __name__ == "__main__":
     val_dataloader = DataLoader(val_dataset, args.batch_size, shuffle=True)
 
     train_model(model, train_dataloader, val_dataloader,
-                1, 1e-3, device,
+                1, 1e-3, device, args.freeze, args.wandb,
                 save_dir=args.save_dir, results_dir=args.stats_dir)

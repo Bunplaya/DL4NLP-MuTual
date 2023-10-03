@@ -1,10 +1,8 @@
 import torch
-import numpy as np
 import os
 import json
-from torch.utils.data import DataLoader, Dataset
+from torch.utils.data import Dataset
 from transformers import AutoTokenizer
-from nltk import wordpunct_tokenize
 
 class MutualDataset(Dataset):
 
