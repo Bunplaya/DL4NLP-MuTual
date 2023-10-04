@@ -1,0 +1,108 @@
+{
+    "os": "Linux-5.15.0-83-generic-x86_64-with-glibc2.35",
+    "python": "3.9.7",
+    "heartbeatAt": "2023-09-28T12:13:15.831471",
+    "startedAt": "2023-09-28T12:13:15.185828",
+    "docker": null,
+    "cuda": null,
+    "args": [
+        "--model",
+        "bert-base-uncased",
+        "--batch_size",
+        "2",
+        "--epochs",
+        "1",
+        "--train_dir",
+        "val"
+    ],
+    "state": "running",
+    "program": "/home/roman/Documents/AI/DL4NLP/main.py",
+    "codePath": "main.py",
+    "host": "roman-GS65-Stealth-8SF",
+    "username": "roman",
+    "executable": "/home/roman/miniconda3/envs/dl2021/bin/python",
+    "cpu_count": 6,
+    "cpu_count_logical": 12,
+    "cpu_freq": {
+        "current": 2471.0535,
+        "min": 800.0,
+        "max": 4100.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 3314.394,
+            "min": 800.0,
+            "max": 4100.0
+        },
+        {
+            "current": 2200.0,
+            "min": 800.0,
+            "max": 4100.0
+        },
+        {
+            "current": 2358.879,
+            "min": 800.0,
+            "max": 4100.0
+        },
+        {
+            "current": 2200.0,
+            "min": 800.0,
+            "max": 4100.0
+        },
+        {
+            "current": 2200.0,
+            "min": 800.0,
+            "max": 4100.0
+        },
+        {
+            "current": 2200.0,
+            "min": 800.0,
+            "max": 4100.0
+        },
+        {
+            "current": 2200.0,
+            "min": 800.0,
+            "max": 4100.0
+        },
+        {
+            "current": 2200.0,
+            "min": 800.0,
+            "max": 4100.0
+        },
+        {
+            "current": 2200.0,
+            "min": 800.0,
+            "max": 4100.0
+        },
+        {
+            "current": 2200.0,
+            "min": 800.0,
+            "max": 4100.0
+        },
+        {
+            "current": 2200.0,
+            "min": 800.0,
+            "max": 4100.0
+        },
+        {
+            "current": 2200.0,
+            "min": 800.0,
+            "max": 4100.0
+        }
+    ],
+    "disk": {
+        "total": 145.64014434814453,
+        "used": 105.7530288696289
+    },
+    "gpu": "NVIDIA GeForce RTX 2070 with Max-Q Design",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "NVIDIA GeForce RTX 2070 with Max-Q Design",
+            "memory_total": 8589934592
+        }
+    ],
+    "memory": {
+        "total": 15.454345703125
+    }
+}
