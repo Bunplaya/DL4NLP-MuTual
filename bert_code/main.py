@@ -1,6 +1,6 @@
 import torch
 import argparse
-from transformers import AutoModelForMultipleChoice, AutoModel
+from transformers import AutoModelForMultipleChoice, AutoModel, GPT2LMHeadModel
 from data import MutualDataset
 import os
 from torch.utils.data import DataLoader
@@ -8,13 +8,15 @@ import numpy as np
 import tqdm
 import wandb
 
-def load_model(cfg_ckpt, method="multiple-choice"):
+def load_model(model_name, method="multiple-choice"):
     # TODO: Code for multi-gpu setup not yet working, probably not required, as models are relatively small
     # Load tokenizer
-    if method == "multiple-choice":
-        model = AutoModelForMultipleChoice.from_pretrained(cfg_ckpt)
+    if model_name == "bert-base-uncased":
+        model = AutoModelForMultipleChoice.from_pretrained(model_name)
+    elif model_name == "gpt2":
+        model = GPT2LMHeadModel.from_pretrained(model_name)
     else:
-        raise Exception("Provide a valid Method for the model i.e.:multiple-choice")
+        raise Exception
 
     return model
 def get_model(download_path, model_version):
@@ -31,13 +33,14 @@ def get_model(download_path, model_version):
 
     return
 
-def train_model(model, train_dataloader, val_dataloader,
-                epochs, learning_rate, device, freeze=False, use_wandb=False,
-                save_dir="Finetuned/bert", results_dir="Results/bert"):
+def train_model(model, train_dataloader, val_dataloader, max_grad_norm,
+                epochs, learning_rate, adam_e, device, freeze=False, use_wandb=False,
+                save_dir="Finetuned/bert", results_dir="Results/bert", wandb_name=None):
 
     if use_wandb:
         wandb.init(
-            project="DL4HLP",
+            project="DL4NLP",
+            name=wandb_name,
             config={
                 "learning_rate":learning_rate,
                 "model":save_dir.split("/")[1],
@@ -67,6 +70,8 @@ def train_model(model, train_dataloader, val_dataloader,
 
     best_model = model
 
+    print(epochs)
+
     for i in range(epochs):
         epoch_loss, epoch_acc = [], []
 
@@ -81,16 +86,17 @@ def train_model(model, train_dataloader, val_dataloader,
 
             preds = model(input_tokens, attention_mask, token_type_ids)[0]
 
-            optimizer.zero_grad()
-
             loss = loss_module(preds, targets)
 
             epoch_loss.append(loss.item())
-            epoch_acc.append(preds.argmax().cpu() == targets.argmax().cpu())
+            epoch_acc.append(np.mean(torch.argmax(preds, dim=1).cpu().numpy() == torch.argmax(targets, dim=1).cpu().numpy()))
 
             loss.backward()
+            torch.nn.utils.clip_grad_norm_(model.parameters(), max_grad_norm)
 
             optimizer.step()
+
+            model.zero_grad()
 
 
         # Compute training set stats of epoch
@@ -106,9 +112,9 @@ def train_model(model, train_dataloader, val_dataloader,
         val_acc.append(val_acc_epoch)
 
         # Check validation accuracy of model, we want to save model with highest validation acc.
-        if np.mean(val_acc) > highest_acc:
+        if val_acc_epoch > highest_acc:
             best_model = model
-            highest_acc = val_acc
+            highest_acc = val_acc_epoch
 
         if use_wandb:
             # Log results to wandb
@@ -137,7 +143,7 @@ def eval_model(model, dataloader, loss_module):
 
         preds = model(input_tokens, attention_mask, token_type_ids)[0]
 
-        acc.append(targets.argmax().cpu() == preds.argmax().cpu())
+        acc.append(np.mean(torch.argmax(preds, dim=1).cpu().numpy() == torch.argmax(targets, dim=1).cpu().numpy()))
 
         loss_val = loss_module(preds, targets)
 
@@ -161,10 +167,16 @@ if __name__ == "__main__":
     argParser.add_argument("--model_ckpt", help="Path to model weights",
                            type=str, default="Models/bert-base-uncased")
 
+    # Data Arguments
+    argParser.add_argument("--data_tokenizer", help="Which models tokenizer to use for the data",
+                           type=str, default="bert-base-uncased")
+
+
     # Training Arguments
-    argParser.add_argument("--epochs", help="Number of epochs to run training for")
+    argParser.add_argument("--epochs", help="Number of epochs to run training for",
+                           type=int, default=10)
     argParser.add_argument("--learning_rate", help="Learning rate to use during training",
-                           type=float, default=1e-3)
+                           type=float, default=5e-5)
     argParser.add_argument("--freeze", help="Freeze the backbone and only train classifier head",
                            action="store_true")
     argParser.add_argument("--CPU", help="Use CPU during training",
@@ -175,14 +187,18 @@ if __name__ == "__main__":
                            type=str, default="Results/bert")
     argParser.add_argument("--wandb", help="Whether to use weights and biases",
                            action="store_true")
-
-    # Data Arguments
     argParser.add_argument("--train_dir", help="Training data directory",
                             type=str, default="train")
     argParser.add_argument("--val_dir", help="Validation data directory",
                             type=str, default="dev")
     argParser.add_argument("--batch_size", help="Batch size during training",
                            type=int, default=16)
+    argParser.add_argument("--adam_e", help="Epsilon for adam optim",
+                           type=float, default=1e-8)
+    argParser.add_argument("--max_grad_norm", help="",
+                           type=float, default=1.0)
+    argParser.add_argument("--wandb_name", help="Name for WandB run",
+                           type=str, default=None)
 
     args = argParser.parse_args()
 
@@ -191,12 +207,12 @@ if __name__ == "__main__":
     if args.get_model:
         get_model(args.download_path, args.get_version)
 
-    if args.model == "bert-base-uncased":
-        model = args.model
-        ckpt = "Models/bert-base-uncased"
-    elif args.model == "gpt2":
-        model = args.model
-        ckpt = "Models/gpt2"
+    # if args.model == "bert-base-uncased":
+    #     model = args.model
+    #     ckpt = "Models/bert-base-uncased"
+    # elif args.model == "gpt2":
+    #     model = args.model
+    #     ckpt = "Models/gpt2"
 
     if args.CPU:
         print("Training on CPU")
@@ -210,14 +226,14 @@ if __name__ == "__main__":
 
     torch.cuda.empty_cache()
 
-    model = load_model(model)
+    model = load_model(args.model)
 
-    train_dataset = MutualDataset("train")
+    train_dataset = MutualDataset("train",args.data_tokenizer)
     train_dataloader = DataLoader(train_dataset, args.batch_size, shuffle=True)
 
-    val_dataset = MutualDataset("dev")
+    val_dataset = MutualDataset("dev", args.data_tokenizer)
     val_dataloader = DataLoader(val_dataset, args.batch_size, shuffle=True)
 
-    train_model(model, train_dataloader, val_dataloader,
-                args.epochs, args.learning_rate, device, args.freeze, args.wandb,
-                save_dir=args.save_dir, results_dir=args.stats_dir)
+    train_model(model, train_dataloader, val_dataloader, args.max_grad_norm,
+                args.epochs, args.learning_rate, args.adam_e, device, args.freeze, args.wandb,
+                save_dir=args.save_dir, results_dir=args.stats_dir, wandb_name=args.wandb_name)
