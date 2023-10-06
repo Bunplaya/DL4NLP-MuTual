@@ -1,6 +1,7 @@
 import torch
 import argparse
 from transformers import AutoModelForCausalLM, AutoTokenizer
+from transformers import GPT2Tokenizer, GPT2LMHeadModel
 from data import MutualDataset
 import os
 from torch.utils.data import DataLoader
@@ -57,6 +58,9 @@ def train_model(model, train_dataloader, val_dataloader,
 
             optimizer.zero_grad()
 
+            print(f"Input IDs shape: {input_ids.shape}")
+            print(f"Attention Mask shape: {attention_mask.shape}")
+
             logits = model(input_ids, attention_mask=attention_mask).logits
 
             loss = loss_module(logits.view(-1, logits.shape[-1]), targets.view(-1))
@@ -70,7 +74,7 @@ def train_model(model, train_dataloader, val_dataloader,
         epoch_loss = np.mean(epoch_loss)
         training_loss.append(epoch_loss)
 
-        val_loss_epoch = eval_model(model, val_dataloader, loss_module)
+        val_loss_epoch = eval_model(model, val_dataloader, loss_module, device)
         val_loss.append(val_loss_epoch)
 
         if val_loss_epoch < highest_val_loss:
@@ -84,6 +88,9 @@ def train_model(model, train_dataloader, val_dataloader,
     best_model.save_pretrained(save_dir)
 
     return
+
+
+
 
 def eval_model(model, dataloader, loss_module):
     model.eval()
@@ -103,6 +110,18 @@ def eval_model(model, dataloader, loss_module):
         loss.append(loss_val.item())
 
     return np.mean(loss)
+
+def collate_batch(batch):
+    input_ids = torch.stack([item['input_ids'] for item in batch])
+    attention_mask = torch.stack([item['attention_mask'] for item in batch])
+    labels = torch.stack([item['label'] for item in batch])
+
+    return {
+        "input_ids": input_ids,
+        "attention_mask": attention_mask,
+        "labels": labels
+    }
+
 
 if __name__ == "__main__":
     argParser = argparse.ArgumentParser()
@@ -145,18 +164,18 @@ if __name__ == "__main__":
         print("GPU not available, training on CPU instead")
         device = torch.device("cpu")
 
-    model_version = "gpt2"
-    tokenizer = AutoTokenizer.from_pretrained("gpt2")
+    # Create the tokenizer and model instances
+    tokenizer = GPT2Tokenizer.from_pretrained("gpt2")
+    model = GPT2LMHeadModel.from_pretrained("gpt2")
+
+    # Add a special token for padding
     tokenizer.add_special_tokens({'pad_token': '[PAD]'})
 
-
-    model = AutoModelForCausalLM.from_pretrained(model_version)
-
     train_dataset = MutualDataset(args.train_dir, tokenizer, args.model)
-    train_dataloader = DataLoader(train_dataset, args.batch_size, shuffle=True)
+    train_dataloader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True, collate_fn=collate_batch)
 
     val_dataset = MutualDataset(args.val_dir, tokenizer, args.model)
-    val_dataloader = DataLoader(val_dataset, args.batch_size, shuffle=True)
+    val_dataloader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=True, collate_fn=collate_batch)
 
     train_model(model, train_dataloader, val_dataloader,
                 args.epochs, args.learning_rate, device, args.freeze, args.wandb)
