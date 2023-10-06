@@ -44,7 +44,7 @@ def train_model(model, train_dataloader, val_dataloader,
 
     best_model = model
 
-    for i in range(epochs):
+    for i in range(int(epochs)):
         epoch_loss = []
 
         for batch in tqdm.tqdm(train_dataloader):
@@ -121,6 +121,9 @@ if __name__ == "__main__":
                            type=str, default="Results/gpt2")
     argParser.add_argument("--wandb", help="Whether to use weights and biases",
                            action="store_true")
+    argParser.add_argument("--freeze", help="Freeze the backbone and only train classifier head",
+                       action="store_true")
+
 
     # Data Arguments
     argParser.add_argument("--train_dir", help="Training data directory",
@@ -143,7 +146,9 @@ if __name__ == "__main__":
         device = torch.device("cpu")
 
     model_version = "gpt2"
-    tokenizer = AutoTokenizer.from_pretrained(model_version)
+    tokenizer = AutoTokenizer.from_pretrained("gpt2")
+    tokenizer.add_special_tokens({'pad_token': '[PAD]'})
+
 
     model = AutoModelForCausalLM.from_pretrained(model_version)
 
@@ -154,6 +159,5 @@ if __name__ == "__main__":
     val_dataloader = DataLoader(val_dataset, args.batch_size, shuffle=True)
 
     train_model(model, train_dataloader, val_dataloader,
-                args.epochs, args.learning_rate, device, args.freeze, args.wandb,
-                save_dir=args.save_dir, results_dir=args.stats_dir)
+                args.epochs, args.learning_rate, device, args.freeze, args.wandb)
 

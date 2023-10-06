@@ -31,49 +31,25 @@ class MutualDataset(Dataset):
         label_tensor = torch.zeros(4)
         label_tensor[label] = 1
 
-        sent_0 = data_dict["article"] + data_dict["options"][0]
-        sent_1 = data_dict["article"] + data_dict["options"][1]
-        sent_2 = data_dict["article"] + data_dict["options"][2]
-        sent_3 = data_dict["article"] + data_dict["options"][3]
+        input_text = data_dict["article"] + " " + " ".join(data_dict["options"])
 
-        encoded_0 = self.tokenizer.encode_plus(
-            text=sent_0,
+        encoded = self.tokenizer.encode_plus(
+            text=input_text,
             add_special_tokens=True,
-            max_length=None,
+            max_length=None,  # Remove max_length constraint
             padding="max_length",
             return_attention_mask=True,
             return_tensors="pt"
         )
 
-        sentences = torch.cat(
-            (
-                encoded_0["input_ids"],
-                encoded_1["input_ids"],
-                encoded_2["input_ids"],
-                encoded_3["input_ids"]
-            ), dim=0
-        )
+        # Get the maximum sequence length in the batch
+        max_length = encoded["input_ids"].shape[1]
 
-        attention_masks = torch.cat(
-            (
-                encoded_0["attention_mask"],
-                encoded_1["attention_mask"],
-                encoded_2["attention_mask"],
-                encoded_3["attention_mask"]
-            ), dim=0
-        )
+        # Adjust the max_length for padding
+        self.max_length = max_length
 
-        token_type_ids = torch.cat(
-            (
-                encoded_0["token_type_ids"],
-                encoded_1["token_type_ids"],
-                encoded_2["token_type_ids"],
-                encoded_3["token_type_ids"]
-            ), dim=0
-        )
-
-        encoded_0["input_ids"] = sentences
-        encoded_0["attention_mask"] = attention_masks
-        encoded_0["token_type_ids"] = token_type_ids
-
-        return encoded_0, label_tensor
+        return {
+            "input_ids": encoded["input_ids"],
+            "attention_mask": encoded["attention_mask"],
+            "label": label_tensor
+        }

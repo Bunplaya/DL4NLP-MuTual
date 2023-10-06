@@ -13,4 +13,4 @@ module load CUDA/11.7.0
 
 export PATH=$HOME/.local/bin:$PATH
 
-python3 main.py --batch_size 2 --epochs 1 --train_dir Data/mutual/train --val_dir Data/mutual/dev --save_dir Finetuned/gpt2/freeze --model gpt2
+python3 main.py --batch_size 2 --epochs 1 --train_dir Data/mutual/train --val_dir Data/mutual/dev --model gpt2
