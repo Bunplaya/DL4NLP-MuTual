@@ -92,7 +92,7 @@ for corpus in new_corpus:
     corpus['article'] = perform_back_translation_with_augmentation({corpus['article']})
 
 # Define the output directory where you want to save the .txt files
-output_directory = "Data/dev_para/"
+output_directory = "Data/dev_back_trans/"
 
 # Create the output directory if it doesn't exist
 os.makedirs(output_directory, exist_ok=True)

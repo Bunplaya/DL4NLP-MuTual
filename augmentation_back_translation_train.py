@@ -5,7 +5,7 @@ import copy
 
 directory_path_dev = "Data/train/"
 
-corpus_dev = []
+corpus_train = []
 
 for filename in os.listdir(directory_path_dev):
     if filename.endswith(".txt"):
@@ -15,7 +15,7 @@ for filename in os.listdir(directory_path_dev):
             try:
                 # Parse the string content as a dictionary
                 json_data = json.loads(file_content)
-                corpus_dev.append(json_data)
+                corpus_train.append(json_data)
             except json.JSONDecodeError as e:
                 print(f"Error parsing JSON in file {filename}: {e}")
 
@@ -92,7 +92,7 @@ for corpus in new_corpus:
     corpus['article'] = perform_back_translation_with_augmentation({corpus['article']})
 
 # Define the output directory where you want to save the .txt files
-output_directory = "Data/train_para/"
+output_directory = "Data/train_back_trans/"
 
 # Create the output directory if it doesn't exist
 os.makedirs(output_directory, exist_ok=True)
