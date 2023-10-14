@@ -1,20 +1,13 @@
-# DL4NLP-MuTual
+# MuTual Analysis with BERT and Data Augmentations
 
-This is an analysis of the MuTual paper. We reproduce the work for the BERT model. We improve these results by implementing augmentations on the data.
+This repository contains an in-depth analysis of the MuTual paper, focusing on the BERT model. Our goal is to reproduce the results presented in the paper and further enhance them by introducing data augmentations.
 
-## Datset
+## Dataset
 
-The dataset from the MuTual paper can be downloaded at [MuTual: A Dataset for Multi-Turn Dialogue Reasoning](https://www.aclweb.org/anthology/2020.acl-main.130/) (ACL2020). The statistics of the data can be seen at the MuTual [GitHub](https://github.com/Nealcly/MuTual/blob/master/README.md) page.
-
+You can obtain the dataset used in the MuTual paper by visiting the [MuTual: A Dataset for Multi-Turn Dialogue Reasoning](https://www.aclweb.org/anthology/2020.acl-main.130/) (ACL2020) page. Detailed dataset statistics are available on the MuTual [GitHub](https://github.com/Nealcly/MuTual/blob/master/README.md) page.
 
 ## Models
 
-The focus will be on the the BERT model.
+Our primary focus is on the BERT model for this analysis. You can find the BERT model and related resources on the [GitHub](https://github.com/google-research/bert) page.
 
-### BERT
-
-The BERT model can be found at the [GitHub](https://github.com/google-research/bert) page.
-
-### GPT2
-
-The GPT2 model has also been partially implemented, however this work is not finished yet.
+We have also initiated work on implementing the GPT2 model, but please note that this work is currently a work in progress and not yet completed.
