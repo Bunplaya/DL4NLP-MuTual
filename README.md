@@ -1,6 +1,6 @@
 # DL4NLP-MuTual
 
-This is an analysis of the MuTual paper.
+This is an analysis of the MuTual paper. We reproduce the work for the BERT model. We improve these results by implementing augmentations on the data.
 
 ## Datset
 
@@ -9,12 +9,8 @@ The dataset from the MuTual paper can be downloaded at [MuTual: A Dataset for Mu
 
 ## Models
 
-The focus will be on the GPT-2 and the BERT models. 
+The focus will be on the the BERT model.
 
 ### BERT
 
-The BERT model can be found at the [GitHub](https://github.com/google-research/bert) page. 
-
-### GPT 2
-
-The GPT 2 model can be found at the [GitHub](https://github.com/openai/gpt-2) page.
+The BERT model can be found at the [GitHub](https://github.com/google-research/bert) page.
