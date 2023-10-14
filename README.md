@@ -14,3 +14,7 @@ The focus will be on the the BERT model.
 ### BERT
 
 The BERT model can be found at the [GitHub](https://github.com/google-research/bert) page.
+
+### GPT2
+
+The GPT2 model has also been partially implemented, however this work is not finished yet.
